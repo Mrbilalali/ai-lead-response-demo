@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#eef4ef" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#07130f" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+  <title>60-Second AI Lead Response Demo</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #eef4ef;
+      --surface: #fbfdfb;
+      --surface-2: #e3ece5;
+      --ink: #0c1712;
+      --muted: #4d6257;
+      --line: #c3d0c7;
+      --accent: #0d6b4d;
+      --accent-2: #b6f04b;
+      --accent-soft: #d8f5df;
+      --danger: #a63f32;
+      --shadow: 0 18px 60px rgba(15, 41, 29, .10);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 10px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #07130f;
+        --surface: #0d1d16;
+        --surface-2: #13291f;
+        --ink: #eef8f1;
+        --muted: #a4b9ad;
+        --line: #294337;
+        --accent: #63d8a4;
+        --accent-2: #c5f66d;
+        --accent-soft: #123a2a;
+        --danger: #ff9484;
+        --shadow: 0 24px 80px rgba(0, 0, 0, .30);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px),
+        var(--bg);
+      background-size: 48px 48px;
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 40%, transparent), var(--bg) 88%);
+      z-index: -1;
+    }
+    button, input, select, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+
+    .wrap { width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
+    .hero { padding: 72px 0 38px; display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: end; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 84%, transparent);
+      color: var(--muted);
+      font: 500 12px/1 "IBM Plex Mono", monospace;
+      letter-spacing: .04em;
+    }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+    h1 {
+      max-width: 780px;
+      margin: 22px 0 18px;
+      font-size: clamp(44px, 6.7vw, 88px);
+      line-height: .94;
+      letter-spacing: -.065em;
+      font-weight: 700;
+    }
+    h1 em { color: var(--accent); font-style: normal; }
+    .lede { margin: 0; max-width: 660px; font-size: clamp(17px, 2vw, 21px); line-height: 1.55; color: var(--muted); }
+    .hero-note { border-top: 1px solid var(--ink); padding-top: 18px; }
+    .hero-note strong { display: block; font: 600 13px/1.2 "IBM Plex Mono", monospace; margin-bottom: 8px; }
+    .hero-note p { margin: 0; color: var(--muted); line-height: 1.5; }
+
+    .demo-shell {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--surface) 96%, transparent);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 48px;
+    }
+    .demo-bar {
+      min-height: 58px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: var(--surface-2);
+    }
+    .demo-bar span { font: 500 12px/1.3 "IBM Plex Mono", monospace; color: var(--muted); }
+    .demo-bar .mode { color: var(--accent); }
+    .demo-grid { display: grid; grid-template-columns: minmax(280px, .82fr) minmax(0, 1.18fr); min-height: 620px; }
+    .intake { padding: 32px; border-right: 1px solid var(--line); }
+    .stage { padding: 32px; background: color-mix(in srgb, var(--surface-2) 36%, var(--surface)); }
+    .section-label { margin: 0 0 22px; font: 600 12px/1 "IBM Plex Mono", monospace; letter-spacing: .08em; color: var(--accent); text-transform: uppercase; }
+    .field { margin-bottom: 18px; }
+    label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--ink);
+      padding: 13px 14px;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    textarea { min-height: 92px; resize: vertical; line-height: 1.45; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .run-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      background: var(--ink);
+      color: var(--surface);
+      padding: 15px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    .run-btn:hover { transform: translateY(-1px); }
+    .run-btn:disabled { cursor: wait; opacity: .55; transform: none; }
+    .run-btn svg { width: 18px; height: 18px; }
+    .fine-print { margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .monitor { display: grid; grid-template-columns: 140px 1fr; gap: 26px; align-items: start; }
+    .timer-wrap { position: sticky; top: 18px; }
+    .timer {
+      width: 124px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) var(--progress, 0deg), var(--line) 0);
+      position: relative;
+    }
+    .timer::after { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--surface); }
+    .timer-content { position: relative; z-index: 1; text-align: center; }
+    .time-value { display: block; font: 600 34px/.9 "IBM Plex Mono", monospace; letter-spacing: -.05em; }
+    .time-unit { display: block; margin-top: 7px; font: 500 10px/1 "IBM Plex Mono", monospace; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; }
+    .timeline { display: grid; gap: 10px; }
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
+      padding: 10px 14px 10px 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      opacity: .52;
+      transition: opacity .25s ease, border-color .25s ease, background .25s ease;
+    }
+    .step.active { opacity: 1; border-color: var(--accent); background: var(--accent-soft); }
+    .step.done { opacity: 1; }
+    .step-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; font: 600 12px/1 "IBM Plex Mono", monospace; }
+    .step.active .step-icon, .step.done .step-icon { background: var(--accent); color: var(--surface); }
+    .step-title { display: block; font-weight: 700; font-size: 14px; }
+    .step-detail { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .step-time { font: 500 11px/1 "IBM Plex Mono", monospace; color: var(--muted); }
+
+    .output {
+      display: none;
+      margin-top: 22px;
+      border: 1px solid var(--accent);
+      border-radius: 16px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .output.show { display: block; animation: reveal .35s ease both; }
+    .output-head { padding: 14px 16px; background: var(--accent-soft); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .output-head strong { font-size: 13px; }
+    .status-pill { font: 600 10px/1 "IBM Plex Mono", monospace; color: var(--accent); }
+    .message { padding: 18px; font-size: 15px; line-height: 1.62; white-space: pre-line; }
+    .output-actions { padding: 0 18px 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .small-btn {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--surface-2);
+      color: var(--ink);
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .small-btn:hover { border-color: var(--accent); }
+
+    .proof { display: grid; grid-template-columns: .9fr 1.1fr; gap: 44px; padding: 30px 0 72px; }
+    .proof h2 { margin: 0 0 16px; font-size: clamp(30px, 4vw, 52px); line-height: 1.02; letter-spacing: -.045em; }
+    .proof p { color: var(--muted); line-height: 1.65; }
+    .architecture { display: grid; gap: 10px; }
+    .arch-row { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; padding: 18px 0; border-top: 1px solid var(--line); }
+    .arch-row:last-child { border-bottom: 1px solid var(--line); }
+    .arch-num { font: 600 12px/1.4 "IBM Plex Mono", monospace; color: var(--accent); }
+    .arch-row strong { display: block; margin-bottom: 5px; }
+    .arch-row p { margin: 0; font-size: 14px; }
+    .stack { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .stack span { border: 1px solid var(--line); border-radius: 999px; padding: 7px 10px; font: 500 11px/1 "IBM Plex Mono", monospace; color: var(--muted); background: var(--surface); }
+
+    .cta {
+      margin-bottom: 36px;
+      padding: 34px;
+      border-radius: var(--radius-lg);
+      background: var(--ink);
+      color: var(--surface);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+    }
+    .cta h2 { margin: 0 0 8px; font-size: clamp(25px, 3vw, 38px); letter-spacing: -.035em; }
+    .cta p { margin: 0; opacity: .72; }
+    .cta a { flex: 0 0 auto; text-decoration: none; padding: 13px 17px; border-radius: 10px; background: var(--accent-2); color: #10200f; font-weight: 800; }
+    footer { padding: 0 0 32px; display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font-size: 12px; }
+
+    .toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 18px); opacity: 0; pointer-events: none; background: var(--ink); color: var(--surface); padding: 10px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; transition: .2s ease; z-index: 10; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @keyframes reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    @media (max-width: 850px) {
+      .hero { grid-template-columns: 1fr; gap: 26px; padding-top: 52px; }
+      .hero-note { max-width: 560px; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .intake { border-right: 0; border-bottom: 1px solid var(--line); }
+      .proof { grid-template-columns: 1fr; gap: 26px; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 22px, 1180px); }
+      .hero { padding-top: 34px; }
+      h1 { font-size: clamp(42px, 14vw, 62px); }
+      .demo-shell { border-radius: 19px; }
+      .demo-bar { align-items: flex-start; flex-direction: column; gap: 4px; }
+      .intake, .stage { padding: 22px 16px; }
+      .monitor { grid-template-columns: 1fr; gap: 20px; }
+      .timer-wrap { position: static; display: flex; justify-content: center; }
+      .timer { width: 116px; }
+      .step { grid-template-columns: 34px 1fr; }
+      .step-time { grid-column: 2; margin-top: -8px; }
+      .proof { padding-bottom: 48px; }
+      .cta { padding: 26px 22px; flex-direction: column; align-items: flex-start; border-radius: 19px; }
+      .cta a { width: 100%; text-align: center; }
+      footer { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span> INTERACTIVE WORKFLOW DEMO</div>
+        <h1 id="hero-title">Reply while the lead is still <em>interested.</em></h1>
+        <p class="lede">See how a new inquiry can be captured, understood, qualified and turned into a personalized response in under 60 seconds.</p>
+      </div>
+      <aside class="hero-note">
+        <strong>BUILT FOR SPEED-TO-LEAD</strong>
+        <p>Use the demo with any sample lead. It models the automation logic without sending a real message.</p>
+      </aside>
+    </section>
+
+    <section class="demo-shell" aria-label="Lead response workflow demo">
+      <div class="demo-bar">
+        <span>LEAD RESPONSE CONTROL ROOM</span>
+        <span class="mode">● SIMULATION MODE — NO MESSAGE SENT</span>
+      </div>
+      <div class="demo-grid">
+        <form class="intake" id="leadForm">
+          <p class="section-label">01 / Incoming lead</p>
+          <div class="field">
+            <label for="leadName">Lead name</label>
+            <input id="leadName" name="leadName" autocomplete="off" value="Sarah" maxlength="40" required />
+          </div>
+          <div class="field">
+            <label for="company">Company</label>
+            <input id="company" name="company" autocomplete="off" value="Northstar Dental" maxlength="60" required />
+          </div>
+          <div class="field">
+            <label for="need">What do they need?</label>
+            <select id="need" name="need">
+              <option value="book more qualified appointments">More qualified appointments</option>
+              <option value="respond to missed calls automatically">Missed-call follow-up</option>
+              <option value="qualify inbound leads faster">Faster lead qualification</option>
+              <option value="automate CRM follow-up">CRM follow-up automation</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="note">Lead's message</label>
+            <textarea id="note" name="note" maxlength="220">We are losing inquiries after hours. Can an AI agent answer questions and book patients?</textarea>
+          </div>
+          <button class="run-btn" id="runBtn" type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 3l14 9-14 9V3z" /></svg>
+            Run 60-second workflow
+          </button>
+          <p class="fine-print">Tip: change the details to see the response adapt. Inputs stay in this tab and are not stored.</p>
+        </form>
+
+        <div class="stage" aria-live="polite">
+          <p class="section-label">02 / Automation run</p>
+          <div class="monitor">
+            <div class="timer-wrap">
+              <div class="timer" id="timer" style="--progress:0deg">
+                <div class="timer-content"><span class="time-value" id="timeValue">00</span><span class="time-unit">seconds</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="timeline" id="timeline">
+                <div class="step" data-at="3"><span class="step-icon">01</span><span><span class="step-title">Lead captured</span><span class="step-detail">Form, call or ad source normalized</span></span><span class="step-time">+03s</span></div>
+                <div class="step" data-at="11"><span class="step-icon">02</span><span><span class="step-title">Context understood</span><span class="step-detail">Need and urgency extracted</span></span><span class="step-time">+11s</span></div>
+                <div class="step" data-at="24"><span class="step-icon">03</span><span><span class="step-title">Lead qualified</span><span class="step-detail">Intent scored and route selected</span></span><span class="step-time">+24s</span></div>
+                <div class="step" data-at="39"><span class="step-icon">04</span><span><span class="step-title">Reply personalized</span><span class="step-detail">Human-style message generated</span></span><span class="step-time">+39s</span></div>
+                <div class="step" data-at="58"><span class="step-icon">05</span><span><span class="step-title">Ready for delivery</span><span class="step-detail">SMS, email or WhatsApp channel</span></span><span class="step-time">+58s</span></div>
+              </div>
+              <div class="output" id="output">
+                <div class="output-head"><strong>Generated first response</strong><span class="status-pill">READY AT 00:58</span></div>
+                <div class="message" id="message"></div>
+                <div class="output-actions">
+                  <button class="small-btn" id="copyBtn" type="button">Copy response</button>
+                  <button class="small-btn" id="resetBtn" type="button">Run another lead</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof" aria-labelledby="how-title">
+      <div>
+        <p class="section-label">The build behind the demo</p>
+        <h2 id="how-title">One workflow. Five coordinated decisions.</h2>
+        <p>The useful part is not “AI writes a message.” It is the orchestration: capture context, decide what matters, create a relevant answer and hand the conversation to the right next step.</p>
+        <div class="stack" aria-label="Example implementation stack">
+          <span>VOICE AI</span><span>GOHIGHLEVEL</span><span>WEBHOOKS</span><span>CRM</span><span>CALENDAR</span><span>APIs</span>
+        </div>
+      </div>
+      <div class="architecture">
+        <div class="arch-row"><span class="arch-num">01</span><div><strong>Listen everywhere</strong><p>Website forms, ads, missed calls and chat become one consistent lead event.</p></div></div>
+        <div class="arch-row"><span class="arch-num">02</span><div><strong>Think with context</strong><p>Intent, urgency and the requested service shape the first response—not a generic template.</p></div></div>
+        <div class="arch-row"><span class="arch-num">03</span><div><strong>Move the conversation</strong><p>The workflow asks the next useful question, offers a booking path and keeps the CRM updated.</p></div></div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div><h2>Want this built around your lead flow?</h2><p>Map the first 60 seconds of your customer journey with Bilal Ali.</p></div>
+      <a href="https://cal.com/mrbilalali/discovery-call" target="_blank" rel="noopener noreferrer">Book a 30-min discovery call</a>
+    </section>
+
+    <footer><span>Concept &amp; automation design by Bilal Ali</span><span>Interactive product demonstration</span></footer>
+  </main>
+  <div class="toast" id="toast" role="status">Response copied</div>
+
+  <script>
+    (function () {
+      var form = document.getElementById('leadForm');
+      var runBtn = document.getElementById('runBtn');
+      var timeValue = document.getElementById('timeValue');
+      var timer = document.getElementById('timer');
+      var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+      var output = document.getElementById('output');
+      var message = document.getElementById('message');
+      var copyBtn = document.getElementById('copyBtn');
+      var resetBtn = document.getElementById('resetBtn');
+      var toast = document.getElementById('toast');
+      var interval = null;
+
+      function resetDemo() {
+        if (interval) window.clearInterval(interval);
+        interval = null;
+        timeValue.textContent = '00';
+        timer.style.setProperty('--progress', '0deg');
+        steps.forEach(function (step) { step.classList.remove('active', 'done'); });
+        output.classList.remove('show');
+        runBtn.disabled = false;
+        runBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 3l14 9-14 9V3z"></path></svg>Run 60-second workflow';
+      }
+
+      function makeResponse() {
+        var name = document.getElementById('leadName').value.trim() || 'there';
+        var company = document.getElementById('company').value.trim() || 'your team';
+        var need = document.getElementById('need').value;
+        var note = document.getElementById('note').value.trim();
+        var contextLine = note ? 'I read your note about ' + note.charAt(0).toLowerCase() + note.slice(1).replace(/[.!?]+$/, '') + '.' : 'I understand you want to improve how new inquiries are handled.';
+        return 'Hi ' + name + ' — thanks for reaching out from ' + company + '.\n\n' + contextLine + ' We can build a workflow to ' + need + ' while keeping the conversation natural and handing qualified opportunities to your team.\n\nWould a quick 15-minute walkthrough of the lead flow be useful?';
+      }
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        resetDemo();
+        runBtn.disabled = true;
+        runBtn.textContent = 'Workflow running…';
+        var second = 0;
+        var target = 58;
+        var tickMs = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 25 : 95;
+
+        interval = window.setInterval(function () {
+          second += 1;
+          timeValue.textContent = String(second).padStart(2, '0');
+          timer.style.setProperty('--progress', ((second / 60) * 360) + 'deg');
+          steps.forEach(function (step) {
+            var at = Number(step.getAttribute('data-at'));
+            step.classList.toggle('active', second >= at && second < at + 8);
+            if (second >= at + 8 || (second === target && second >= at)) step.classList.add('done');
+          });
+          if (second >= target) {
+            window.clearInterval(interval);
+            interval = null;
+            steps.forEach(function (step) { step.classList.remove('active'); step.classList.add('done'); });
+            message.textContent = makeResponse();
+            output.classList.add('show');
+            runBtn.disabled = false;
+            runBtn.textContent = 'Run again with updated details';
+            output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }, tickMs);
+      });
+
+      copyBtn.addEventListener('click', function () {
+        var text = message.textContent;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(showToast);
+        } else {
+          var area = document.createElement('textarea');
+          area.value = text;
+          area.style.position = 'fixed';
+          area.style.opacity = '0';
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand('copy');
+          area.remove();
+          showToast();
+        }
+      });
+
+      resetBtn.addEventListener('click', function () {
+        resetDemo();
+        document.getElementById('leadName').focus();
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+
+      function showToast() {
+        toast.classList.add('show');
+        window.setTimeout(function () { toast.classList.remove('show'); }, 1500);
+      }
+    })();
+  </script>
+</body>
+</html>
